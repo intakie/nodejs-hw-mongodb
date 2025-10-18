@@ -16,21 +16,40 @@ import {
   createContactSchema,
   updateContactSchema,
 } from '../validation/contacts.js';
+import { authenticate } from '../middlewares/authenticate.js';
+import { checkContactOwner } from '../middlewares/checkContactOwner.js';
 
 const router = Router();
+router.use(authenticate);
 
 router.get('/', ctrlWrapper(getContactsController));
-router.get('/:contactId', isValidId, ctrlWrapper(getContactByIdController));
+router.get(
+  '/:contactId',
+  isValidId,
+  checkContactOwner,
+  ctrlWrapper(getContactByIdController),
+);
 router.post(
   '/',
   validateBody(createContactSchema),
   ctrlWrapper(createContactController),
 );
-router.delete('/:contactId', isValidId, ctrlWrapper(deleteContactController));
-router.put('/:contactId', isValidId, ctrlWrapper(upsertContactController));
+router.delete(
+  '/:contactId',
+  isValidId,
+  checkContactOwner,
+  ctrlWrapper(deleteContactController),
+);
+router.put(
+  '/:contactId',
+  isValidId,
+  checkContactOwner,
+  ctrlWrapper(upsertContactController),
+);
 router.patch(
   '/:contactId',
   isValidId,
+  checkContactOwner,
   validateBody(updateContactSchema),
   ctrlWrapper(patchContactController),
 );

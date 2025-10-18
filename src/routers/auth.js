@@ -8,6 +8,10 @@ import { loginUserController } from '../controllers/auth.js';
 import { logoutUserController } from '../controllers/auth.js';
 import { refreshUserSessionController } from '../controllers/auth.js';
 import { authenticate } from '../middlewares/authenticate.js';
+import { requestResetEmailSchema } from '../validation/auth.js';
+import { requestResetEmailController } from '../controllers/auth.js';
+import { resetPasswordSchema } from '../validation/auth.js';
+import { resetPasswordController } from '../controllers/auth.js';
 
 const router = Router();
 
@@ -23,10 +27,21 @@ router.post(
   ctrlWrapper(loginUserController),
 );
 
-router.post('/logout', ctrlWrapper(logoutUserController));
+router.post(
+  '/request-reset-email',
+  validateBody(requestResetEmailSchema),
+  ctrlWrapper(requestResetEmailController),
+);
 
-router.post('/refresh', ctrlWrapper(refreshUserSessionController));
+router.post(
+  '/reset-password',
+  validateBody(resetPasswordSchema),
+  ctrlWrapper(resetPasswordController),
+);
 
 router.use(authenticate);
+
+router.post('/logout', ctrlWrapper(logoutUserController));
+router.post('/refresh', ctrlWrapper(refreshUserSessionController));
 
 export default router;
